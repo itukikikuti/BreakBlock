@@ -17,7 +17,7 @@ int MAIN()
 	block.scale.x = 2.0f;
 
 	Float3 blockPositions[width][height];
-	int blockLife[width][height];
+	int blockLift[width][height];
 
 	Sprite ball(L"ball.png");
 	Float3 ballVelocity;
@@ -49,7 +49,7 @@ int MAIN()
 				{
 					Float3 offset(-width / 2 * 35.0f, 160.0f, 0.0f);
 					blockPositions[x][y] = Float3(x * 35.0f, y * 20.0f, 0.0f) + offset;
-					blockLife[x][y] = 1;
+					blockLift[x][y] = 3;
 				}
 			}
 
@@ -63,7 +63,7 @@ int MAIN()
 		{
 			for (int y = 0; y < height; y++)
 			{
-				if (blockLife[x][y] <= 0)
+				if (blockLift[x][y] <= 0)
 					continue;
 
 				initFlag = false;
@@ -79,7 +79,7 @@ int MAIN()
 					now.y < block.position.y + 16.0f)
 				{
 					ballVelocity.x = -ballVelocity.x;
-					blockLife[x][y]--;
+					blockLift[x][y]--;
 					pointSound.Play();
 				}
 
@@ -89,9 +89,22 @@ int MAIN()
 					next.y < block.position.y + 16.0f)
 				{
 					ballVelocity.y = -ballVelocity.y;
-					blockLife[x][y]--;
+					blockLift[x][y]--;
 					pointSound.Play();
 				}
+
+                if (blockLift[x][y] == 3)
+                {
+                    block.color = Float4(0.0f, 1.0f, 0.0f, 1.0f);
+                }
+                else if (blockLift[x][y] == 2)
+                {
+                    block.color = Float4(1.0f, 1.0f, 0.0f, 1.0f);
+                }
+                else if (blockLift[x][y] == 1)
+                {
+                    block.color = Float4(1.0f, 0.0f, 0.0f, 1.0f);
+                }
 
 				block.Draw();
 			}
@@ -139,13 +152,10 @@ int MAIN()
 			player.position.x = -App::GetWindowSize().x / 2.0f;
 		}
 
-		float hitRangeX = (player.GetSize().x * player.scale.x + ball.GetSize().x) / 2.0f;
-		float hitRangeY = (player.GetSize().y * player.scale.y + ball.GetSize().y) / 2.0f;
-
-		if (player.position.x - hitRangeX < ball.position.x &&
-			player.position.x + hitRangeX > ball.position.x &&
-			player.position.y - hitRangeY < ball.position.y &&
-			player.position.y + hitRangeY > ball.position.y)
+		if (player.position.x - 48.0f < ball.position.x &&
+			player.position.x + 48.0f > ball.position.x &&
+			player.position.y - 16.0f < ball.position.y &&
+			player.position.y + 16.0f > ball.position.y)
 		{
 			ballVelocity.x = (ball.position.x - player.position.x) * 0.2f;
 			ballVelocity.y = fabsf(ballSpeed);
